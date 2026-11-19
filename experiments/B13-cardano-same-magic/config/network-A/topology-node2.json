@@ -1,0 +1,18 @@
+{
+  "bootstrapPeers": null,
+  "localRoots": [
+    {
+      "accessPoints": [
+        {
+          "address": "10.170.0.71",
+          "port": 3001
+        }
+      ],
+      "advertise": false,
+      "trustable": true,
+      "valency": 1
+    }
+  ],
+  "publicRoots": [],
+  "useLedgerAfterSlot": -1
+}

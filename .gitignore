@@ -1,0 +1,76 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# SEED Emulator generated output
+**/output/
+**/cardano-data/
+**/captures/
+**/logs/
+
+# Sensitive files
+*.skey
+*.key
+*.pem
+*.p12
+.env
+.env.*
+!.env.example
+
+# Packet captures and logs
+*.pcap
+*.pcapng
+*.log
+
+# Temporary files
+*.tmp
+*.swp
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+
+# Preserved local research and fresh experiment state
+/.local-research/
+**/.runtime/
+**/config/generated/
+**/config/**/*-genesis.json
+**/resources/cardano-static/
+**/output*/
+**/build/
+**/data/
+**/deployment/
+**/identities/
+**/enrollments/
+**/secure/
+*.signed
+*.txbody
+*.vkey
+*.cert
+*.cborhex
+*.tar.gz
+
+**/identity-data/
+
+# Local tool metadata and Aiken build output
+/.agents/
+/.aws/
+/.codex/
+**/plutus.json
+
+# Additional local evidence, backup and binary artifacts
+**/evidence/
+**/.cache/
+**/.pytest_cache/
+**/backups/
+*.bak
+*.old
+*.orig
+*.tgz
+*.zip
+*.qcow2

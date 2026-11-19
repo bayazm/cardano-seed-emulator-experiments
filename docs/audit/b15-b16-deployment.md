@@ -1,0 +1,20 @@
+# B15 v2 and B16 deployment implementation
+
+## Implemented
+
+- [Registry deployment helper](../../scripts/deploy-registry.py) derives the funding address and creates an independent Cardano administrator key. It discovers live UTXOs, builds a pure-ADA collateral split, applies Aiken parameters, builds the mint and registry spends, signs locally and submits only with `--submit`. Verification requires the same singleton NFT, datum, revision and UTXO reference on all four incumbents.
+- The mint seed uses the Aiken `OutputReference` constructor with transaction bytes and an output index. The parameterized membership script takes the administrator hash, applied policy ID and exact registry name bytes. Initial authorization is false at revision 0. Authorization and revocation spend the predecessor state with the original action constructors, named administrator witness, correct successor and unchanged registry value.
+- [B16 namespace helper](../../scripts/deploy-b16-sidecars.py) provisions separate authority, gateway and candidate staging directories. Publication commands copy public material and registry bindings only. The gateway and candidate enter the existing AS183/184 network namespaces after checking the expected IP. The gateway retains its existing enrollment, challenge, registry and firewall decision checks. AS185 remains a separate unprovisioned control.
+- [B16 candidate entry point](../../experiments/B16-cardano-did-authentication/network/scripts/did_auth/sidecar/remote_auth.py) now resolves data relative to its role tree, binds TCP/4040 connections to AS184's intended source address and supports requiring a successful admission decision. The namespace helper uses that requirement. Aiken validators and the firewall logic were retained.
+
+## Offline validation
+
+Both Aiken projects passed 23 checks and built Plutus V3 blueprints in isolated workspace copies. Actual Aiken parameter application succeeded for a synthetic output reference, including a multi-byte index, and Cardano CLI reproduced the applied mint policy hash and constructed the membership script address. The four transaction argument sets were exercised using mocked ledger access and compared with installed CLI help. Mocked transport verified build-only behavior, opt-in submission and local dual signing without copying signing keys. The phase-one generated Shelley fixtures contain the default payment address in the encoded initialization funds map for both profiles. The live ledger has yet to confirm that funding.
+
+B16 staging, local Ed25519 issuance and verification, both public publication steps, gateway imports and candidate argument parsing passed in an isolated workspace copy. The staged gateway has no candidate private key and no authority signing key. The candidate and authority each retain their own restricted private files. No historical deployment inputs were used for the test.
+
+## Runtime validation and remaining limits
+
+The [deployment procedure](../reproducibility/registry-procedure.md) is ready for a dedicated VM test after runtime authorization. Record real collateral selection and balancing, submitted transaction IDs and the corresponding confirmed outputs before testing firewall transitions. The workflow requires a funded testnet key, sufficient ADA for fees and outputs, the recorded Cardano versions, Aiken v1.1.24 and the existing Compose topology. It assumes one active operator and one AS184 deployment at a time.
+
+The namespace variant requires Linux root for `nsenter`, Docker access for the gateway, `ip`, and cryptography under the selected Python interpreter. The one-host model protects file distribution by role but trusts the VM operator and root. The prototype binds the authenticated identity to an enrolled endpoint. It supplies no hardware attestation or mutually authenticated gateway transport. Running containers, live transaction selection/balancing and submission, TCP/4040 routing, TCP/3001 phase changes, AS185 denial and cleanup remain runtime checks. If root namespace or Docker access cannot be granted on the selected VM, B16 live integration is blocked there.
