@@ -74,3 +74,6 @@ Thumbs.db
 *.tgz
 *.zip
 *.qcow2
+
+# Locally downloaded Cardano binaries
+/resources/cardano/
