@@ -1,5 +1,12 @@
 # B12-cardano · Conway transactions, metadata and sensor integrity
 
+## Reproduction guides
+
+- [Sensor-hash validator result and demo walkthrough](../../docs/reproducibility/B12_sensor_hash_final_report.md)
+- [Single-network sensor-hash reproduction commands](../../docs/reproducibility/B12_sensor_hash_smart_contract_demo.md)
+- [B12-4242 protocol-2 workflows and benchmark](../../docs/reproducibility/B12_portable_workflow.md)
+- [Sanitized experimental evidence and checksums](../../docs/results/b12/README.md)
+
 ## Overview
 
 Measure confirmation and size for transfers with and without metadata, and demonstrate off-chain hash verification and a Plutus sensor validator.
@@ -23,7 +30,7 @@ Linux x86-64, Python 3, Cardano Node 11.1.3 and CLI 11.2.3.0, and the pinned SEE
 ## Installation
 
 1. Install SEED Emulator and the host utilities from the installation guide.
-2. In `experiments/B12-cardano/`, extract the checksum-verified Cardano archive under `resources/cardano-static/`.
+2. From the repository root run `bash scripts/setup-cardano.sh B12` to install the checksum-verified archive.
 3. Return to the repository root for fresh genesis generation.
 
 ## Configuration
@@ -90,7 +97,7 @@ A consistent digest supports byte integrity when the ledger record and source bi
 
 ## Limitations
 
-The transaction helper queries magic 4242. The unit-tested Plutus validator and off-chain metadata verifier are separate proof-of-concept layers. Fresh transfer confirmation remains untested. See the [validation matrix](../../docs/audit/validation-matrix.md) for the checks performed on this release.
+The transaction helper queries magic 4242. The unit-tested Plutus validator and off-chain metadata verifier are separate proof-of-concept layers. The local reproduction verified 33 transactions on B12-4242 and independently exercised the original Plutus V3 script on B12-P9. See the [portable workflow](../../docs/reproducibility/B12_portable_workflow.md) and [published evidence extracts](../../docs/results/b12/README.md). See the [validation matrix](../../docs/audit/validation-matrix.md) for the checks performed on this release.
 
 ## Troubleshooting
 
