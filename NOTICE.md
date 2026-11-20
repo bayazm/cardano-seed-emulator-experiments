@@ -1,6 +1,12 @@
 # Attribution and licensing
 
-These experiments were developed for a university Field Project at Università della Svizzera italiana (USI), with CyberTel as the industry collaborator. Confirm the author list and institutional attribution with the project owner before release.
+The project owner is the sole contributor to the project-specific material and has authorized its publication. CyberTel is acknowledged as the industry collaborator.
+
+## AI assistance
+
+OpenAI Codex assisted with work across the B-series experiments in this repository, including B11, B12, and other B-series files. That assistance included reproduction scripts, tests, evidence verification, and documentation. This acknowledgment also covers future contributions made with Codex assistance.
+
+## Third-party dependencies
 
 SEED Emulator is an external dependency developed by the SEED project. Its inspected distribution provides the GNU General Public License version 3. The root `LICENSE` preserves that text for upstream-derived work. Confirm which project-owned Python, shell and documentation files will be released under GPL-3.0 and obtain the relevant rightsholder's approval before publishing. [SEED Emulator source and license](https://github.com/seed-labs/seed-emulator)
 

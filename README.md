@@ -1,8 +1,8 @@
 # Cardano experiments in SEED Emulator
 
-This work was carried out as a Field Project at Università della Svizzera italiana (USI), with CyberTel as the industry collaborator.
+CyberTel is acknowledged as the industry collaborator.
 
-This Università della Svizzera italiana (USI) Field Project investigates how private Cardano networks behave on a routed emulated Internet. The experiments progress from basic block production to ledger-backed relay authorization. They ask when a message or measurement can be checked against a ledger, what separates connectivity from chain compatibility, and how a ledger decision can inform network admission.
+This project investigates how private Cardano networks behave on a routed emulated Internet. The experiments progress from basic block production to ledger-backed relay authorization. They ask when a message or measurement can be checked against a ledger, what separates connectivity from chain compatibility, and how a ledger decision can inform network admission.
 
 All nine packages passed fresh genesis generation, SEED topology compilation and Compose configuration checks. [B11 also passed a controlled runtime smoke test](docs/audit/b11-runtime-result.md).
 
@@ -70,7 +70,7 @@ See the [publication checklist](docs/reproducibility/publication-checklist.md) f
 
 ## Attribution and references
 
-This project was developed for a university Field Project at Università della Svizzera italiana. The release uses SEED Emulator and Cardano as independent dependencies. See [attribution and licensing](NOTICE.md) for the upstream notices and remaining release decision.
+The release uses SEED Emulator and Cardano as independent dependencies. See [attribution and licensing](NOTICE.md) for the upstream notices and remaining release decision.
 
 - [SEED Emulator](https://github.com/seed-labs/seed-emulator)
 - [Cardano Core Node](https://github.com/IntersectMBO/cardano-node)
