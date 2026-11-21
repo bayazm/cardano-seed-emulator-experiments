@@ -6,7 +6,7 @@ This project investigates how private Cardano networks behave on a routed emulat
 
 All nine packages passed fresh genesis generation, SEED topology compilation and Compose configuration checks. [B11 also passed a controlled runtime smoke test](docs/audit/b11-runtime-result.md).
 
-The [historical results](docs/results/historical-results.md) identify the observations supported by the original evidence, including B12 confirmations, B14 packet traces and B16 identity and revocation records. The B13 entries distinguish configuration evidence from protocol or ledger outcomes. The newly developed B15/B16 deployment helpers were validated offline. Fresh integrated execution of those helpers remains unverified. See the [validation matrix](docs/audit/validation-matrix.md).
+The [historical results](docs/results/historical-results.md) identify the observations supported by the original evidence, including B12 confirmations, B14 packet traces and B16 identity and revocation records. The newly developed B15/B16 deployment helpers were validated offline. Fresh integrated execution of those helpers remains unverified. See the [validation matrix](docs/audit/validation-matrix.md).
 
 ## System architecture
 
@@ -32,8 +32,7 @@ flowchart LR
 | [B12](experiments/B12-cardano/README.md) | Conway transactions, CIP-20, sensor integrity and benchmarks | 11.1.3 |
 | [B13 interoperability v2](experiments/B13-cardano-interoperability-v2/README.md) | Two independent chains and distinct network magic | 11.1.3 |
 | [B13 node join](experiments/B13-cardano-node-join/README.md) | Staged same-ledger relay synchronization | 11.1.3 |
-| [B13 same magic](experiments/B13-cardano-same-magic/README.md) | Equal magic, distinct genesis and staggered starts | 11.1.3 |
-| [B13 same time](experiments/B13-cardano-same-time/README.md) | Equal magic and initial time, distinct genesis | 11.1.3 |
+| [B13 matching magic and start time](experiments/B13-cardano-same-time/README.md) | Equal magic and start time, independent genesis, and AS172 → AS170 peering | 11.1.3 |
 | [B14](experiments/B14-cardano-relay-admission/README.md) | Linux firewall admission and revocation | 11.1.3 |
 | [B15 v2](experiments/B15-cardano-smart-authorization-v2/README.md) | Aiken registry NFT, authorization and firewall enforcement | 11.1.3 |
 | [B16](experiments/B16-cardano-did-authentication/README.md) | Ed25519 DID enrollment, authentication and ledger-backed admission | 11.1.3 |
@@ -41,6 +40,8 @@ flowchart LR
 See the [experiment selection report](docs/audit/experiment-selection.md) for the disposition of the two earlier candidates.
 
 ## Setup and operation
+
+For B13, select one of the three entries above and use the [B13 runbook](docs/reproducibility/b13.md) to install the pinned tools, generate genesis in a private run directory, configure peers, and verify the deployment.
 
 1. Use an isolated Linux x86-64 emulator host. The observed toolchain includes Python 3.8.10, Docker 20.10.21 and standalone Compose 1.27.4.
 2. Install the pinned SEED Emulator checkout and its Python dependencies. Configure a working Docker installation. Install Python cryptography for B16 and Aiken v1.1.24 with the project-pinned stdlib v4.0.0 for contract work. [Installation and verified Cardano checksums](docs/reproducibility/install.md)

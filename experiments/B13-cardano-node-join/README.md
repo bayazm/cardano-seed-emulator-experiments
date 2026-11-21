@@ -1,84 +1,47 @@
-# B13-cardano-node-join · Staged relay joining on Network A
+# B13 · Staged relay joining
 
-## Overview
+Start AS171 with an empty database after AS170 has begun producing blocks. Verify that the late relay synchronizes on A's ledger. AS170 and AS171 use the same A genesis. AS172 produces independently on B with its own genesis. Both networks use magic 5555 and the same configured start. The three systems route through IX200 and Cardano listens on TCP 3001.
 
-Measure whether a relay sharing A genesis can start later and synchronize with A.
+## Installation and deployment
 
-## Research Objective
-
-Measure whether a relay sharing A genesis can start later and synchronize with A.
-
-## Background
-
-Late joining a compatible ledger and connecting independent chains are different experiments.
-
-## Architecture
-
-Network A has producer AS170 (`10.170.0.71`) and relay AS171 (`10.171.0.71`). Network B has producer AS172 (`10.172.0.71`). A peers internally over TCP 3001. B starts without external local roots. The SEED underlay routes between these autonomous systems. Network magic is 5555 on both networks.
-
-## Prerequisites
-
-Linux x86-64, Python 3, Cardano Node 11.1.3 and CLI 11.2.3.0, and the pinned SEED Emulator revision in the [installation guide](../../docs/reproducibility/install.md). The audit host used Python 3.8.10, Docker 20.10.21 and Compose 1.27.4.
-
-## Installation
-
-1. Install SEED Emulator and the host utilities from the installation guide.
-2. In `experiments/B13-cardano-node-join/`, extract the checksum-verified Cardano archive under `resources/cardano-static/`.
-3. Return to the repository root for fresh genesis generation.
-
-## Configuration
-
-The compiler reads `config/` under its own directory. The active profile is `network-A and network-B`. The numbered topology files define local roots. Use the [genesis guide](../../docs/reproducibility/genesis.md) to keep era files and corresponding locally generated credentials together. Choose a dedicated empty runtime root for a fresh run.
-
-The original genesis shell helper in `scripts/` is retained for provenance. The commands below use the common generator, which creates the output parent and selects each variant’s timing.
-
-## Running the Experiment
-
-From the repository root, in a disposable experiment copy:
+Use Linux x86-64, Cardano Node 11.1.3, CLI 11.2.3.0, and the pinned SEED Emulator and host tools in the [B13 runbook](../../docs/reproducibility/b13.md#install-and-prepare-a-fresh-run). From the repository root in Bash, set:
 
 ```bash
-umask 077
-python3 scripts/prepare-genesis.py experiments/B13-cardano-node-join --minutes 30
-cd experiments/B13-cardano-node-join
-python3 blockchain.py amd
-cd output
-docker-compose config -q
-docker-compose build
-# Use the staged start below.
+scenario="B13-cardano-node-join"
 ```
 
-For the staged run, replace the generic startup command with the following sequence from `output/`. The first command excludes the candidate relay; wait for confirmed A-side block production before starting it.
+Use the runbook to create the private experiment copy, install the binaries, explicitly generate fresh genesis and credentials, and verify the two Shelley starts and hashes.
+
+Keep AS172's delivered topology for the staged test so it remains an independent control. The [AS172 → AS170 template](../../docs/reproducibility/b13.md#select-the-peer-topology) is available for a separate cross-network run. Follow [compile and build](../../docs/reproducibility/b13.md#compile-and-build), then run these commands from `output/`:
 
 ```bash
 docker-compose up -d --scale hnode_171_host_0=0
-docker exec as170h-Cardano-A-Node-1-10.170.0.71 cardano-cli query tip \
-  --testnet-magic 5555 --socket-path /cardano/node.socket
-docker-compose up -d hnode_171_host_0
+docker-compose ps
+a="$(docker-compose ps -q hnode_170_host_0)"
+b_magic=5555
+docker exec "$a" cardano-cli query tip --socket-path /cardano/node.socket --testnet-magic 5555
 ```
 
-## Verification
+Check that AS171 is absent from the running services. AS170 must produce blocks with the relay still stopped before you can evaluate late-join synchronization. Wait until after A's configured genesis time and repeat the AS170 tip query until you record an increasing block number. If AS170 fails to advance:
 
-Follow the [runtime verification plan](../../docs/reproducibility/runtime-verification.md) for expected observations, evidence and cleanup.
+- Compare the container's `docker exec "$a" date -u` with A's generated Shelley `systemStart`. Allow time for the single producer to forge.
+- Check `docker-compose ps`, the node socket with `docker exec "$a" test -S /cardano/node.socket`, and AS170 startup and forging messages using `node_log "$a"` from the [runbook](../../docs/reproducibility/b13.md#check-tcp-and-the-cardano-handshake).
+- Check that the AS170 image contains A's matching genesis files and readable producer credentials at `/cardano/producer/`. Check the log for genesis hash mismatches, credential or KES errors, and database startup failures. Confirm that this run uses its fresh database bind mount and that the CLI query uses magic 5555.
 
-Record relay start time, tip growth and the first comparable common block point with AS170. Keep AS172 separate and query it as an independent control. The [operations guide](../../docs/reproducibility/operations.md) gives common tip, packet capture and Compose commands.
+If blocks still fail to advance, record an unmet producer prerequisite and leave the synchronization and compatibility outcome inconclusive. Once AS170 is advancing, start AS171:
 
-## Experimental Results
+```bash
+date -u
+docker-compose up -d hnode_171_host_0
+docker-compose ps
+```
 
-A topology and staged procedure are available. Historical synchronization timing and fresh staged Compose behavior remain unverified. See the [evidence summary](../../docs/results/historical-results.md).
+## Verify and clean up
 
-## Security Analysis
+Load the service IDs and `probe` function from [TCP and Cardano handshake checks](../../docs/reproducibility/b13.md#check-tcp-and-the-cardano-handshake) and run the probe toward AS170 from the relay.
 
-Admission by shared genesis and topology does not establish authorization of a remote relay.
+```bash
+probe "$relay" 10.170.0.71 5555
+```
 
-## Limitations
-
-The compiler includes a database namespace for continuing AS170. A continuation requires its exact matching prior A genesis, producer credentials and storage. See the [validation matrix](../../docs/audit/validation-matrix.md) for the checks performed on this release.
-
-## Troubleshooting
-
-See the [troubleshooting guide](../../docs/troubleshooting/README.md) for missing sockets, binaries, credentials and configuration issues. If startup fails, check the generated service name, node log and start time before changing the environment.
-
-## References
-
-- [Cardano Node 11.1.3 release](https://github.com/IntersectMBO/cardano-node/releases/tag/11.1.3)
-- [SEED Emulator](https://github.com/seed-labs/seed-emulator)
+Use the [tip queries](../../docs/reproducibility/b13.md#check-block-production-and-synchronization) for all three nodes. Record a later AS171 tip matching a previously observed AS170 block, slot and hash. Track AS172 as a separate control. Use [cleanup and troubleshooting](../../docs/reproducibility/b13.md#troubleshoot-and-clean-up) from the same Compose project.
