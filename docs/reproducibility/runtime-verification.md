@@ -22,33 +22,9 @@ Use the [B11 startup](../../experiments/B11-cardano/README.md). Query `tip as150
 
 Use the [B12 startup and funding checks](../../experiments/B12-cardano/README.md). Verify all four advancing tips with magic 4242. From the compiler directory run the README's build-only transfer and then repeat with `--execute` on the dedicated test network. Repeat with the sensor metadata fixture and run the included digest verifier. Collect transaction IDs, node query evidence, transfer CSV and verifier output. Run `python3 benchmark_cardano.py --pairs 1` only after confirming genesis funding and a successful transfer. Preserve its CSV. Pass when expected transaction outputs are confirmed on the four queried nodes, the fixture digest matches, an altered copy fails verification, and both benchmark rows report confirmation. Missing funds, timeout, a divergent ledger result or unexpected verifier status fails the applicable check.
 
-## B13 interoperability v2, same magic and same time · Independent networks
+## B13 · Interoperability and staged joining
 
-Use the respective [distinct-magic](../../experiments/B13-cardano-interoperability-v2/README.md), [same-magic](../../experiments/B13-cardano-same-magic/README.md) or [same-time](../../experiments/B13-cardano-same-time/README.md) startup. For the independent-chain baseline keep the delivered B topology. For the paired test use a separate fresh compiler copy. In `config/network-B/topology-node3.json`, replace the empty `localRoots` list with the following group, then compile from that copy. Keep other inputs and topology settings controlled.
-
-```json
-[{"accessPoints":[{"address":"10.171.0.71","port":3001}],"advertise":false,"trustable":true,"valency":1}]
-```
-
-Query `tip as170h-Cardano-A-Node-1-10.170.0.71 5555` and `tip as172h-Cardano-B-Node-3-10.172.0.71 6666` for distinct magic. Substitute 5555 on B for the matching-magic variants. To establish TCP reachability from B, use:
-
-```bash
-docker exec as172h-Cardano-B-Node-3-10.172.0.71 nc -z -w 3 10.171.0.71 3001
-```
-
-Compare paired AS171/AS172 TCP/3001 captures, handshake logs, tip history and common chain points. Evaluate each scenario separately:
-
-| Scenario | Expected control | Pass or failure condition |
-|---|---|---|
-| Distinct magic | Magic 5555/6666, equal configured start | Record transport reachability and evidence of the protocol outcome for distinct magic. Capture or logs that establish neither handshake result nor ledger behavior leave the result inconclusive. |
-| Same magic | Magic 5555/5555, B starts 20 minutes after A | Confirm both distinct genesis identities and the configured start difference before comparing handshake and ledger evidence. Wait for B genesis before interpreting an absent connection. A mismatched control or absent usable evidence fails the run. |
-| Same time | Magic 5555/5555, equal configured start, independent genesis | Verify equality of magic and time and distinct era hashes, then record handshake outcome separately from ledger behavior. A shared tip claim requires a verified common block point. A mislabeled configuration or missing diagnostics fails the run. |
-
-The hypotheses are that magic affects negotiation and that matching magic/time can still leave separate ledgers. Report observations, including unexpected results, rather than treating the hypotheses as measured outcomes.
-
-## B13 node join · Same-ledger convergence
-
-Use the [staged startup](../../experiments/B13-cardano-node-join/README.md). Verify AS170 starts advancing before starting `hnode_171_host_0`. Collect timestamps, its startup logs, AS170 and AS171 tips using magic 5555, and a TCP/3001 capture between them. Check AS172 separately. Pass when the late AS171 relay advances to a common A chain point after startup. If AS171 was already started, shares a dirty database, or fails to converge, the staged result is invalid or failed.
+Use [distinct magic](../../experiments/B13-cardano-interoperability-v2/README.md), [matching magic and start time](../../experiments/B13-cardano-same-time/README.md), or [staged node join](../../experiments/B13-cardano-node-join/README.md). The [B13 runbook](b13.md) covers private run directories, the AS172 → AS170 topology, TCP and Cardano handshake probes, and comparing chain points. For staged joining, verify that AS170 advances before starting AS171 and that AS171 reaches a matching A block point afterward.
 
 ## B14 · Network admission and revocation
 

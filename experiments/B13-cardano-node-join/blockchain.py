@@ -279,23 +279,10 @@ for index, asn in enumerate(cardano_ases, start=1):
     # 5.7 Persistent blockchain database
     # ----------------------------------------------
 
-    # Each node receives a separate Docker volume.
-    #
-    # This prevents the loss of blockchain data
-    # when containers are recreated.
-   
-    # Store blockchain databases under the experiment runtime root.
-
-    DATA_EXPERIMENT = (
-        "B13-same-magic"
-        if asn == 170
-        else "B13-node-join"
-    )
-
     DATABASE_DIR = (
         RUNTIME_ROOT
         / "cardano-data"
-        / DATA_EXPERIMENT
+        / "B13-node-join"
         / f"as{asn}"
     )
 
