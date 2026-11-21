@@ -28,7 +28,7 @@ The reviewed source set was inspected for Cardano and DID private material, admi
 
 ## Licensing and attribution
 
-The preserved GPL v3 text matches the inspected SEED checkout's `LICENSE.txt`. This establishes the upstream license text. Upstream-derived material needs appropriate attribution, retained notices and applicable source and modification obligations. The three Aiken manifests declare Apache-2.0 and the existing license text is retained. Preserve applicable notices and identify modifications to any Apache-covered source that is distributed. Cardano binaries remain external dependencies. A file-level provenance and permission decision for project-owned code and documentation, author credits and approved USI wording remain with the project rightsholders. No license was added or changed during this phase. [Attribution and existing notices](../../NOTICE.md), [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0)
+The preserved GPL v3 text matches the inspected SEED checkout's `LICENSE.txt`. This establishes the upstream license text. Upstream-derived material needs appropriate attribution, retained notices and applicable source and modification obligations. The three Aiken manifests declare Apache-2.0 and the existing license text is retained. Preserve applicable notices and identify modifications to any Apache-covered source that is distributed. Cardano binaries remain external dependencies. File-level provenance and permission for adapted material remain part of the release review. No license was added or changed during this phase. [Attribution and existing notices](../../NOTICE.md), [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0)
 
 ## Publication recommendation
 

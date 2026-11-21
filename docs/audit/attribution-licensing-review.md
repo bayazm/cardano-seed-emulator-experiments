@@ -1,6 +1,6 @@
 # Attribution and licensing review
 
-The README and notice identify Università della Svizzera italiana (USI) as the Field Project setting and CyberTel as the industry collaborator. That wording records participation without asserting endorsement, ownership or a license grant.
+The README and notice credit CyberTel as the industry collaborator. The credit records its role in the project.
 
 | Tracked material | Observed provenance | Release implication |
 |---|---|---|
@@ -10,4 +10,4 @@ The README and notice identify Università della Svizzera italiana (USI) as the 
 | The three Aiken projects and `licenses/Apache-2.0.txt` | The project manifests declare Apache-2.0. The Aiken standard library is referenced by the manifests and lockfiles as an external dependency. The release includes its license text and excludes dependency source caches. | Retain the Apache-2.0 text and any applicable notices. Confirm the project rightsholders have authorized release under the declared terms. |
 | `LICENSE`, SEED Emulator, Cardano and other external dependencies | The tracked GPL v3 text matches the inspected SEED checkout. The upstream package, Cardano binaries, Docker images and dependency caches are obtained separately. | Preserve applicable upstream terms and distinguish dependency attribution from licensing of release-owned files. The root GPL text establishes upstream obligations for covered material. Confirm the scope of any license grant for the release's other files. |
 
-Before publication, confirm each contributor's preferred credit and the rightsholder's authority to release the material. Confirm any USI or CyberTel terms that apply to redistribution of code, configuration, documentation or project findings. Institutional participation alone provides no evidence of redistribution permission. Retain applicable source notices and record confirmed modifications before approval. [Repository attribution notice](../../NOTICE.md), [GPL v3 text](../../LICENSE), [Apache-2.0 text](../../licenses/Apache-2.0.txt)
+The project owner confirmed sole contribution to the project-specific material and authorized its publication. Check any separate collaborator terms that apply to code, configurations, documentation or findings. Retain applicable source notices and record confirmed modifications before approval. [Repository attribution notice](../../NOTICE.md), [GPL v3 text](../../LICENSE), [Apache-2.0 text](../../licenses/Apache-2.0.txt)

@@ -1,0 +1,63 @@
+{
+  "genesis": {
+    "B12-4242": {
+      "magic": 4242,
+      "major": 2,
+      "systemStart": "2026-11-19T18:09:33Z",
+      "eras": {
+        "Byron": {
+          "cardano_hash": "7658afa78fadb69fc26c0da3021d2fabdcb057daa8b28d13e20914e7c61de034",
+          "sha256": "fff6c9f395a5355047488cffe8edf0a6686d54470908e70544d4450dbc4c74bf"
+        },
+        "Shelley": {
+          "cardano_hash": "f4967c61c610dfcd9a777a0c7b56b49ff20dbf062fe5ece715ce26dce9f64b2e",
+          "sha256": "913f21aed57e32649f86527276585c7d712b2f5d686de7496c34c3845b04e189"
+        },
+        "Alonzo": {
+          "cardano_hash": "d9cb5f26ffb1f9d9cd16bb2921bb959ac405ded4dd338f11b21032378531a5bc",
+          "sha256": "4291b3e5fbcdd1f1daed9ab8f78e4d0181eb7eac4506e34c8aa0fecab6051f3b"
+        },
+        "Conway": {
+          "cardano_hash": "95692ab7dc8352df5cc53c1ceb7fd3f9e35169081c94b996dd01c040ab9071e9",
+          "sha256": "234cfee468f82b513c2012697a8c327189e6a0ae9ce78f1f996eaea6e2ebc020"
+        }
+      }
+    },
+    "B12-P9": {
+      "magic": 4343,
+      "major": 9,
+      "systemStart": "2026-11-19T23:27:33Z",
+      "eras": {
+        "Byron": {
+          "cardano_hash": "a8af54bc7881e1d2e9f69936a6786f9636669f306b86e1f74c47f32e9dd594d8",
+          "sha256": "50ac82da07fad7b047d12bb941f6b91b2d34b0400a1ab83250aac58261433103"
+        },
+        "Shelley": {
+          "cardano_hash": "813c8eb1c5e6370e19d2a36385c6f5d13940637948561091c2cb67b45cf66f9b",
+          "sha256": "d484533f2716509559a54a2ffbbc1de76b9e8b7e0ad0b22553b22b7a595eae2f"
+        },
+        "Alonzo": {
+          "cardano_hash": "d9cb5f26ffb1f9d9cd16bb2921bb959ac405ded4dd338f11b21032378531a5bc",
+          "sha256": "4291b3e5fbcdd1f1daed9ab8f78e4d0181eb7eac4506e34c8aa0fecab6051f3b"
+        },
+        "Conway": {
+          "cardano_hash": "95692ab7dc8352df5cc53c1ceb7fd3f9e35169081c94b996dd01c040ab9071e9",
+          "sha256": "234cfee468f82b513c2012697a8c327189e6a0ae9ce78f1f996eaea6e2ebc020"
+        }
+      }
+    }
+  },
+  "measurement_sha256": "48c8058f3678a57c6c5c4faf94deb540938f707d4bdd9a789600822a36149216",
+  "script_execution": {
+    "executionUnits": {
+      "memory": 18728,
+      "steps": 6057476
+    },
+    "lovelaceCost": 1518,
+    "scriptHash": "16f6b8ccfeb9173cb8c5fcfe4cfba48c685ed231636e92d316bf2c83"
+  },
+  "transactions_per_network": {
+    "B12-4242": 33,
+    "B12-P9": 2
+  }
+}

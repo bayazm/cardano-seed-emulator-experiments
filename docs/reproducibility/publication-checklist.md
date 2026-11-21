@@ -7,7 +7,7 @@
 - [x] Label B15/B16 deployment helpers as offline-validated prototypes.
 - [x] Check the release index for excluded paths, secrets, binaries, generated state and backups.
 - [x] Prepare the first local commit in an independent Git checkout.
-- [ ] Confirm authorship, institutional wording and file-level redistribution permissions. Review the inherited SEED and Aiken notices and the provenance of adapted source and configuration. [Attribution and licensing](../../NOTICE.md)
+- [ ] Confirm file-level redistribution permissions. Review the inherited SEED and Aiken notices and the provenance of adapted source and configuration. [Attribution and licensing](../../NOTICE.md)
 - [ ] Replace the local commit's placeholder Git identity with the approved author and committer identity.
 - [ ] Confirm the destination repository and explicitly approve the push.
 

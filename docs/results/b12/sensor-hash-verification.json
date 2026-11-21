@@ -1,0 +1,146 @@
+{
+  "scope": "Derived evidence from the completed B12-P9 run. Raw block and transaction bytes stay private.",
+  "network": {
+    "magic": 4343,
+    "era": "Conway",
+    "ledger_protocol": {
+      "major": 9,
+      "minor": 0
+    }
+  },
+  "funding": {
+    "inclusion_by_node": {
+      "AS150": {
+        "block": 1593,
+        "slot": 53852,
+        "block_hash": "0d87e06082269ae47f00e9be00850c3d340a60f6a3aad07bd5e0f860ea8bae57",
+        "transaction_index": 0,
+        "txid": "cec962433d2049aa7ab1fd16493dc498a1116ef480d4aab7fa424441ac0f7510",
+        "block_record_sha256": "b6c1da4a24c8a10ca7519ea1d61ed9edbf0a347cb13f7d5f0cdf0e75a36a905d"
+      },
+      "AS151": {
+        "block": 1593,
+        "slot": 53852,
+        "block_hash": "0d87e06082269ae47f00e9be00850c3d340a60f6a3aad07bd5e0f860ea8bae57",
+        "transaction_index": 0,
+        "txid": "cec962433d2049aa7ab1fd16493dc498a1116ef480d4aab7fa424441ac0f7510",
+        "block_record_sha256": "b6c1da4a24c8a10ca7519ea1d61ed9edbf0a347cb13f7d5f0cdf0e75a36a905d"
+      },
+      "AS152": {
+        "block": 1593,
+        "slot": 53852,
+        "block_hash": "0d87e06082269ae47f00e9be00850c3d340a60f6a3aad07bd5e0f860ea8bae57",
+        "transaction_index": 0,
+        "txid": "cec962433d2049aa7ab1fd16493dc498a1116ef480d4aab7fa424441ac0f7510",
+        "block_record_sha256": "b6c1da4a24c8a10ca7519ea1d61ed9edbf0a347cb13f7d5f0cdf0e75a36a905d"
+      },
+      "AS153": {
+        "block": 1593,
+        "slot": 53852,
+        "block_hash": "0d87e06082269ae47f00e9be00850c3d340a60f6a3aad07bd5e0f860ea8bae57",
+        "transaction_index": 0,
+        "txid": "cec962433d2049aa7ab1fd16493dc498a1116ef480d4aab7fa424441ac0f7510",
+        "block_record_sha256": "b6c1da4a24c8a10ca7519ea1d61ed9edbf0a347cb13f7d5f0cdf0e75a36a905d"
+      }
+    },
+    "script_output_index": 0,
+    "funded_lovelace": 5000000,
+    "fee_lovelace": 428,
+    "sensor_id": "AGRI-002",
+    "measurement_sha256": "b76cef7674424ef76659031a5cf22f1d9b38316c2fe1e71cdbd12c75fc30ac26"
+  },
+  "spend": {
+    "inclusion_by_node": {
+      "AS150": {
+        "block": 1661,
+        "slot": 55199,
+        "block_hash": "5463a2ca3de45ad228faa92ebab92f23472e472f6b65f776e1c73b53eaea4115",
+        "transaction_index": 0,
+        "txid": "b944855580f84b08a03bda144bac657fc263658d07fa4ff090c0ea4d7f374181",
+        "block_record_sha256": "a1f5cfa6910fd61155dfb58203d2874ce2d9630d7c9def36265e513e05c03b3e"
+      },
+      "AS151": {
+        "block": 1661,
+        "slot": 55199,
+        "block_hash": "5463a2ca3de45ad228faa92ebab92f23472e472f6b65f776e1c73b53eaea4115",
+        "transaction_index": 0,
+        "txid": "b944855580f84b08a03bda144bac657fc263658d07fa4ff090c0ea4d7f374181",
+        "block_record_sha256": "a1f5cfa6910fd61155dfb58203d2874ce2d9630d7c9def36265e513e05c03b3e"
+      },
+      "AS152": {
+        "block": 1661,
+        "slot": 55199,
+        "block_hash": "5463a2ca3de45ad228faa92ebab92f23472e472f6b65f776e1c73b53eaea4115",
+        "transaction_index": 0,
+        "txid": "b944855580f84b08a03bda144bac657fc263658d07fa4ff090c0ea4d7f374181",
+        "block_record_sha256": "a1f5cfa6910fd61155dfb58203d2874ce2d9630d7c9def36265e513e05c03b3e"
+      },
+      "AS153": {
+        "block": 1661,
+        "slot": 55199,
+        "block_hash": "5463a2ca3de45ad228faa92ebab92f23472e472f6b65f776e1c73b53eaea4115",
+        "transaction_index": 0,
+        "txid": "b944855580f84b08a03bda144bac657fc263658d07fa4ff090c0ea4d7f374181",
+        "block_record_sha256": "a1f5cfa6910fd61155dfb58203d2874ce2d9630d7c9def36265e513e05c03b3e"
+      }
+    },
+    "script_input_consumed_on_all_nodes": true,
+    "collateral_unspent_on_all_nodes": true,
+    "recipient_lovelace": 4995583,
+    "total_fee_lovelace": 4417,
+    "script_hash": "f7b1435250172148a3c6c2fc5eccf212062d314cd11744018af5fa29",
+    "plutus_version": 3,
+    "execution_units": {
+      "memory": 41108,
+      "steps": 15289580
+    },
+    "evaluated_script_fee_lovelace": 3475
+  },
+  "evaluation": {
+    "matching": {
+      "result": "accepted live evaluation and confirmed spend",
+      "offline_control_exit_code": 0
+    },
+    "local_rejections": {
+      "wrong-temperature": {
+        "claimed_id": "AGRI-002",
+        "measurement_sha256": "c236b7761bdf3f94a88c1e2cc2168c36bb75fbc51d2233c0a625cca388966e64",
+        "failed_check": "measurement commitment",
+        "exit_code": 1,
+        "result": "rejected in local evaluation"
+      },
+      "wrong-humidity": {
+        "claimed_id": "AGRI-002",
+        "measurement_sha256": "527ce46e18f5d161d04a6043c66fb8e405e92c108a91349057c30a262e45291e",
+        "failed_check": "measurement commitment",
+        "exit_code": 1,
+        "result": "rejected in local evaluation"
+      },
+      "wrong-id": {
+        "claimed_id": "AGRI-001",
+        "measurement_sha256": "b76cef7674424ef76659031a5cf22f1d9b38316c2fe1e71cdbd12c75fc30ac26",
+        "failed_check": "sensor ID",
+        "exit_code": 1,
+        "result": "rejected in local evaluation"
+      },
+      "malformed": {
+        "failed_check": "redeemer data constructor",
+        "exit_code": 1,
+        "result": "rejected in local evaluation"
+      }
+    },
+    "aiken_tests": {
+      "total": 10,
+      "passed": 10,
+      "failed": 0,
+      "kind": {
+        "unit": 10,
+        "property": 0
+      }
+    }
+  },
+  "scope_limits": [
+    "The four-node proofs are summaries from exact-byte verification, with source block record digests.",
+    "Local negatives were not submitted."
+  ]
+}

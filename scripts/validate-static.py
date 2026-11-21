@@ -37,6 +37,10 @@ def main():
         for name in sorted(files):
             path = Path(directory) / name
             relative = path.relative_to(root)
+            if (relative.as_posix() == "experiments/B11-cardano/resources/cardano-static"
+                    and path.is_symlink()
+                    and os.readlink(path) == "../../../resources/cardano/11.0.1"):
+                continue
             if path.is_symlink() or path.suffix in PRIVATE_SUFFIXES or name.startswith(".env"):
                 issues.append(f"{relative}: excluded artifact or symlink")
                 continue

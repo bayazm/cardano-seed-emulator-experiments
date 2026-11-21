@@ -77,3 +77,6 @@ Thumbs.db
 
 # Locally downloaded Cardano binaries
 /resources/cardano/
+
+# B12 locally created binary symlink (also ignore the link itself)
+/experiments/B12-cardano/resources/cardano-static
