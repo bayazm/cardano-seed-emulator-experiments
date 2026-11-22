@@ -13,14 +13,18 @@ case "$EXPERIMENT" in
         EXPERIMENT_DIR="$ROOT_DIR/experiments/B11-cardano"
         SHA256="40e88a543564251338c4888ef79fde51d2306c18b48ac308c9eab3220e3a13f0"
         ;;
-    B12)
+    B12|B14)
         VERSION="11.1.3"
         CLI_VERSION="11.2.3.0"
-        EXPERIMENT_DIR="$ROOT_DIR/experiments/B12-cardano"
+        if [[ "$EXPERIMENT" == B14 ]]; then
+            EXPERIMENT_DIR="$ROOT_DIR/experiments/B14-cardano-relay-admission"
+        else
+            EXPERIMENT_DIR="$ROOT_DIR/experiments/B12-cardano"
+        fi
         SHA256="530fb99986fbdccc46f9ee0dd86cabb1393b015feac9173cb731d89fa748365f"
         ;;
     *)
-        echo "Usage: $0 {B11|B12} [local-archive]" >&2
+        echo "Usage: $0 {B11|B12|B14} [local-archive]" >&2
         exit 1
         ;;
 esac

@@ -33,6 +33,8 @@ CONFIG_DIR = (
 )
 
 OUTPUT_DIR = PROJECT_DIR / "output"
+FIREWALL_SCRIPT = PROJECT_DIR / "scripts/relay-admission.sh"
+CAPTURES_DIR = RUNTIME_ROOT / "captures"
 
 
 # --------------------------------------------------
@@ -49,6 +51,7 @@ genesis_files = [
 required_files = [
     CARDANO_NODE,
     CARDANO_CLI,
+    FIREWALL_SCRIPT,
     CONFIG_DIR / "config.json",
 ]
 
@@ -124,6 +127,8 @@ print("SEED Emulator base network created.")
 # 5. Configure Cardano hosts
 # --------------------------------------------------
 
+CAPTURES_DIR.mkdir(parents=True, exist_ok=True)
+
 for index, asn in enumerate(cardano_ases, start=1):
 
     # Get the host belonging to this autonomous system.
@@ -146,6 +151,9 @@ for index, asn in enumerate(cardano_ases, start=1):
     host.addSoftware("netcat-openbsd")
     host.addSoftware("tcpdump")
     host.addSoftware("iptables")
+    host.setLabel("experiment", "b14-relay-admission")
+    host.addSharedFolder("/captures", str(CAPTURES_DIR))
+    host.importFile(str(FIREWALL_SCRIPT), "/cardano/relay-admission.sh")
 
     # ----------------------------------------------
     # 5.2 Import Cardano executables
@@ -310,14 +318,7 @@ for index, asn in enumerate(cardano_ases, start=1):
     if asn in (150, 151, 152, 153):
 
         host.appendStartCommand(
-            "iptables -w -I INPUT 1 "
-            "-s 10.154.0.71 "
-            "-p tcp --dport 3001 "
-            "-j DROP && "
-            "iptables -w -I OUTPUT 1 "
-            "-d 10.154.0.71 "
-            "-p tcp --dport 3001 "
-            "-j DROP || exit 1"
+            f"bash /cardano/relay-admission.sh --inside deny {asn} || exit 1"
         )
 
         print(
@@ -384,153 +385,7 @@ emu.compile(
 print("Docker infrastructure generated.")
 
 # --------------------------------------------------
-# 9. Add shared capture directory to SEED nodes
-# --------------------------------------------------
-
-import re
-
-CAPTURES_DIR = (
-    RUNTIME_ROOT
-    / "captures"
-)
-
-CAPTURES_DIR.mkdir(
-    parents=True,
-    exist_ok=True
-)
-
-compose_file = OUTPUT_DIR / "docker-compose.yml"
-
-capture_mount = (
-    f"{CAPTURES_DIR}:/captures"
-)
-
-lines = compose_file.read_text().splitlines(
-    keepends=True
-)
-
-target_re = re.compile(
-    r"^    ((?:hnode_|rnode_|rs_)[^:]+):\s*$"
-)
-
-service_re = re.compile(
-    r"^    [A-Za-z0-9_.-]+:\s*$"
-)
-
-targets = []
-
-for i, line in enumerate(lines):
-
-    if target_re.match(line):
-
-        end = len(lines)
-
-        for j in range(i + 1, len(lines)):
-
-            if service_re.match(lines[j]):
-                end = j
-                break
-
-        targets.append((i, end))
-
-
-for start, end in reversed(targets):
-
-    block = lines[start:end]
-
-    # Avoid duplicate /captures mounts.
-    if any(
-        "/captures" in line
-        for line in block
-    ):
-        continue
-
-    volumes_index = None
-
-    # Find an existing volumes: section.
-    for offset, line in enumerate(block):
-
-        if line.startswith("        volumes:"):
-            volumes_index = start + offset
-            break
-
-    if volumes_index is not None:
-
-        # Find the end of the complete volumes section.
-        # This keeps long-form mounts such as:
-        #
-        # - type: bind
-        #   source: ...
-        #   target: ...
-        #
-        # together.
-
-        insert_index = end
-
-        for pos in range(
-            volumes_index + 1,
-            end
-        ):
-
-            current = lines[pos]
-
-            # A new service-level key such as:
-            # labels:
-            # networks:
-            # command:
-            if (
-                current.startswith("        ")
-                and not current.startswith("            ")
-                and current.strip()
-            ):
-                insert_index = pos
-                break
-
-        lines[
-            insert_index:insert_index
-        ] = [
-            f"            - {capture_mount}\n"
-        ]
-
-    else:
-
-        # No existing volumes section.
-        # Create one before networks or labels.
-
-        insert_index = end
-
-        for pos in range(
-            start + 1,
-            end
-        ):
-
-            if (
-                lines[pos].startswith("        networks:")
-                or lines[pos].startswith("        labels:")
-            ):
-                insert_index = pos
-                break
-
-        lines[
-            insert_index:insert_index
-        ] = [
-            "        volumes:\n",
-            f"            - {capture_mount}\n",
-        ]
-
-
-compose_file.write_text(
-    "".join(lines)
-)
-
-print(
-    "Added /captures bind mount to "
-    "SEED hosts, routers, and route servers."
-)
-
-
-# --------------------------------------------------
-# 10. Ensure executable permissions in Dockerfiles
+# 9. Ensure executable permissions in Dockerfiles
 # --------------------------------------------------
 
 # The SEED importFile() operation copies binaries
@@ -584,7 +439,7 @@ for asn in cardano_ases:
 
 
 # --------------------------------------------------
-# 11. Completion summary
+# 10. Completion summary
 # --------------------------------------------------
 
 print()

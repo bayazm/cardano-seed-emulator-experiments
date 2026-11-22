@@ -28,13 +28,7 @@ Use [distinct magic](../../experiments/B13-cardano-interoperability-v2/README.md
 
 ## B14 · Network admission and revocation
 
-Use the [B14 phase commands](../../experiments/B14-cardano-relay-admission/README.md). At each phase collect AS153 `iptables -w -nvL INPUT` and `OUTPUT` via `docker exec`, plus candidate/relay logs, `ss -tn` and TCP/3001 captures. To test a new candidate connection during each window:
-
-```bash
-docker exec as154h-Cardano-Node-5-10.154.0.71 nc -z -w 3 10.153.0.71 3001
-```
-
-Pass when the fresh candidate connection fails in baseline, succeeds in the admitted phase and fails again after rule restoration, with evidence of expected rule order and continued legitimate connectivity. Track existing flows separately from new probes. Capture ambiguity or unchanged candidate connectivity requires investigation.
+Use the [B14 runbook](b14.md#verify-denial-admission-and-revocation) for the controller, per-phase probes, packet captures, and chain-tip checks. Fresh connections should fail during startup denial, succeed at AS153 during admission, and fail again after revocation. Track existing flows separately.
 
 ## B15 v2 · Registry-backed admission and revocation
 
@@ -46,4 +40,4 @@ Use [B16 startup](../../experiments/B16-cardano-did-authentication/README.md) an
 
 ## Cleanup for every experiment
 
-Stop foreground observers and gateway processes. For B14 restore the phase rules using the exact inverse commands in its README if the admitted phase was left active. For B16 use `python3 scripts/b16_n15_firewall_controller.py revoke` from `network/` if the authorized test gateway applied candidate ACCEPT rules and the run needs rollback. From the experiment's `output/` directory, run `docker-compose stop` and record `docker-compose ps`. Keep the database, evidence and local credentials protected. Stopping the isolated experiment preserves its state for audit.
+Stop foreground observers and gateway processes. For B14 use the [runbook cleanup procedure](b14.md#restore-and-clean-up). For B16 use `python3 scripts/b16_n15_firewall_controller.py revoke` from `network/` if the authorized test gateway applied candidate ACCEPT rules and the run needs rollback. From the experiment's `output/` directory, run `docker-compose stop` and record `docker-compose ps`. Keep the database, evidence and local credentials protected. Stopping the isolated experiment preserves its state for audit.
