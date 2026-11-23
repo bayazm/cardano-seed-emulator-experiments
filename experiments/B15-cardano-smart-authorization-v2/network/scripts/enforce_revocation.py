@@ -2,139 +2,51 @@
 
 import argparse
 import json
-import subprocess
 import sys
 from datetime import datetime, timezone
 
 import admission_controller as registry
+import registry_firewall as firewall
 
-AS183 = "b15-as183h-Cardano-Node-4-10.183.0.71"
-IP = "10.184.0.71"
-
-RULES = [
-    ["INPUT", "-s", IP, "-p", "tcp",
-     "--dport", "3001", "-j", "DROP"],
-
-    ["OUTPUT", "-d", IP, "-p", "tcp",
-     "--dport", "3001", "-j", "DROP"],
-]
-
-
-def docker_iptables(action, rule):
-    return subprocess.run(
-        ["docker", "exec", AS183,
-         "iptables", "-w", action, *rule],
-        capture_output=True,
-        text=True,
-        timeout=30,
-    )
-
-
-def rule_exists(rule):
-    result = docker_iptables("-C", rule)
-
-    if result.returncode == 0:
-        return True
-
-    if result.returncode == 1:
-        return False
-
-    raise RuntimeError(result.stderr)
+REVOCATION_REVISION = 2
 
 
 def verify_revocation():
-    results = {}
-
-    for name, container in registry.AUTHORIZED_NODES.items():
-        utxos = registry.query_registry(container)
-
-        reference, state = registry.find_registry(utxos)
-
-        results[name] = {
-            "reference": reference,
-            "state": state,
-        }
-
-        print(
-            f"{name}: authorized={state['authorized']} "
-            f"revision={state['revision']}",
-            flush=True,
-        )
-
-    first = results["AS180"]
-
-    if not all(value == first for value in results.values()):
-        raise RuntimeError("Registry disagreement between nodes")
-
-    state = first["state"]
-
-    if state["node"] != "AS184":
-        raise RuntimeError("Unexpected node identity")
-
-    if state["ip"] != IP:
-        raise RuntimeError("Unexpected node IP")
-
-    if state["authorized"] is not False:
-        raise RuntimeError("Node has not been revoked")
-
-    if state["revision"] != 2:
-        raise RuntimeError("Unexpected registry revision")
-
-    return first["reference"]
+    return registry.verify_registry(authorized=False, revision=REVOCATION_REVISION)
 
 
 def main():
     parser = argparse.ArgumentParser()
-
-    parser.add_argument(
-        "--apply",
-        action="store_true",
-        help="Enforce revocation"
-    )
-
+    parser.add_argument("--apply", action="store_true", help="Enforce revocation")
     args = parser.parse_args()
 
-    reference = verify_revocation()
-
-    print("\nBLOCKCHAIN REVOCATION VERIFIED")
-
     if not args.apply:
+        verify_revocation()
+        print("Blockchain revocation: VERIFIED", flush=True)
         print("DRY RUN: Firewall unchanged")
         return
 
-    # Recheck the current registry immediately
-    # before modifying the firewall.
-    if verify_revocation() != reference:
-        raise RuntimeError("Registry changed during verification")
-
-    added = []
-
-    for rule in RULES:
-        if not rule_exists(rule):
-            result = docker_iptables("-I", rule)
-
-            if result.returncode != 0:
-                raise RuntimeError(result.stderr)
-
-            added.append(rule)
-
-    if not all(rule_exists(rule) for rule in RULES):
-        raise RuntimeError("Firewall verification failed")
+    with firewall.operation_lock():
+        snapshot = verify_revocation()
+        print("Blockchain revocation: VERIFIED", flush=True)
+        target = firewall.validate_target()
+        if verify_revocation() != snapshot:
+            raise RuntimeError("Registry changed before enforcement")
+        added = firewall.ensure_blocked(target)
 
     record = {
-        "timestamp_utc": datetime.now(
-            timezone.utc
-        ).isoformat(),
+        "timestamp_utc": datetime.now(timezone.utc).isoformat(),
         "event": "RELAY_REVOCATION",
-        "node": "AS184",
-        "ip": IP,
+        "node": registry.EXPECTED_NODE,
+        "ip": registry.EXPECTED_IP,
         "peer": "AS183",
         "authorized": False,
-        "registry_revision": 2,
-        "registry_utxo": reference,
+        "registry_revision": snapshot["state"]["revision"],
+        "registry_utxo": snapshot["reference"],
         "blockchain_verification": "PASS",
         "firewall_policy": "DROP",
-        "rules_added": len(added),
+        "firewall_modified": bool(added),
+        "rules_added": added,
     }
 
     print("\nNETWORK REVOCATION ENFORCED")
@@ -145,8 +57,5 @@ if __name__ == "__main__":
     try:
         main()
     except Exception as exc:
-        print(
-            f"REVOCATION ENFORCEMENT FAILED: {exc}",
-            file=sys.stderr,
-        )
+        print(f"REVOCATION ENFORCEMENT INCOMPLETE: {exc}", file=sys.stderr)
         sys.exit(1)

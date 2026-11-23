@@ -81,3 +81,4 @@ Thumbs.db
 # Locally created binary symlinks
 /experiments/B12-cardano/resources/cardano-static
 /experiments/B14-cardano-relay-admission/resources/cardano-static
+/experiments/B15-cardano-smart-authorization-v2/network/resources/cardano-static
