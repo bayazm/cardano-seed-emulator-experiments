@@ -235,6 +235,9 @@ class Deployment:
                 txid = run(self.cli, "conway", "transaction", "txid", "--tx-body-file", local / "body",
                            "--output-text")
                 if not args.submit:
+                    if args.out_body is not None:
+                        with args.out_body.open("xb") as destination:
+                            destination.write((local / "body").read_bytes())
                     print(f"Built {args.operation} transaction {txid}; submission disabled")
                     return
                 flags = ["--signing-key-file", self.funding.with_suffix(".skey")]
@@ -268,13 +271,18 @@ def main():
         if name in ("collateral", "mint"):
             operation.add_argument("--lovelace", type=int, default=5_000_000)
         if name in ("collateral", "mint", "authorize", "revoke"):
-            operation.add_argument("--submit", action="store_true")
+            mode = operation.add_mutually_exclusive_group()
+            mode.add_argument("--submit", action="store_true")
+            mode.add_argument("--out-body", type=Path,
+                              help="B15 only: retain the unsigned body at a new host path")
         if name == "verify":
             operation.add_argument("--revision", type=int, choices=(0, 1, 2), required=True)
     args = parser.parse_args()
     root = args.experiment.resolve()
     if root.name not in PROFILES:
         parser.error("Select the publication B15 v2 or B16 experiment directory")
+    if getattr(args, "out_body", None) is not None and PROFILES[root.name] != "b15":
+        parser.error("--out-body is supported for B15 only")
     try:
         deployment = Deployment(root, args.funding_key, args.container)
         if args.operation == "wallet":

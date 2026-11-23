@@ -3,7 +3,7 @@ use aiken/collection/list
 
 use cardano/address
 use cardano/assets
-use cardano/assets.{PolicyId}
+use cardano/assets.{Assets, PolicyId}
 
 use cardano/transaction
 use cardano/transaction.{
@@ -112,6 +112,16 @@ fn mint_transaction(
   token_name: ByteArray,
   quantity: Int,
 ) -> Bool {
+  mint_transaction_with_value(
+    consume_required,
+    assets.from_asset(test_policy_id(), token_name, quantity),
+  )
+}
+
+fn mint_transaction_with_value(
+  consume_required: Bool,
+  minted_assets: Assets,
+) -> Bool {
 
   // ----------------------------------------------------------
   // A. Test configuration
@@ -147,19 +157,7 @@ fn mint_transaction(
 
 
   // ----------------------------------------------------------
-  // C. Construct minted assets
-  // ----------------------------------------------------------
-
-  let minted_assets =
-    assets.from_asset(
-      policy_id,
-      token_name,
-      quantity,
-    )
-
-
-  // ----------------------------------------------------------
-  // D. Construct simulated transaction
+  // C. Construct simulated transaction
   // ----------------------------------------------------------
 
   let tx =
@@ -255,4 +253,12 @@ test reject_registry_token_burning() {
     "B15_REGISTRY",
     -1,
   )
+}
+
+test reject_additional_asset_under_registry_policy() {
+  let policy = test_policy_id()
+  let minted =
+    assets.from_asset(policy, "B15_REGISTRY", 1)
+      |> assets.add(policy, "EXTRA", 1)
+  !mint_transaction_with_value(True, minted)
 }

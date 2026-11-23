@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import json
+import re
 import subprocess
 import sys
 from datetime import datetime, timezone
@@ -8,13 +9,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 
-REGISTRY_ADDRESS = (
-    ROOT / "deployment/registry/membership-script.addr"
-).read_text().strip()
-
-POLICY_ID = (
-    ROOT / "deployment/registry/policy-id.txt"
-).read_text().strip()
+DEPLOYMENT = ROOT / "deployment/registry"
 
 TOKEN_NAME = "B15_REGISTRY".encode().hex()
 
@@ -32,12 +27,23 @@ AUTHORIZED_NODES = {
 }
 
 
-def query_registry(container):
+def registry_parameters():
+    address = (DEPLOYMENT / "membership-script.addr").read_text().strip()
+    policy = (DEPLOYMENT / "policy-id.txt").read_text().strip()
+    if not re.fullmatch(r"[0-9a-f]{56}", policy):
+        raise ValueError("Invalid registry policy ID")
+    if not address:
+        raise ValueError("Registry script address is missing")
+    return address, policy
+
+
+def query_registry(container, address):
     result = subprocess.run(
         [
             "docker", "exec", container,
             "cardano-cli", "query", "utxo",
-            "--address", REGISTRY_ADDRESS,
+            "--address", address,
+            "--output-json",
             "--testnet-magic", NETWORK_MAGIC,
             "--socket-path", "/cardano/node.socket",
         ],
@@ -86,17 +92,19 @@ def decode_registry(datum):
     }
 
 
-def find_registry(utxos):
+def find_registry(utxos, address, policy):
     matches = []
 
     for reference, output in utxos.items():
         quantity = (
             output.get("value", {})
-            .get(POLICY_ID, {})
+            .get(policy, {})
             .get(TOKEN_NAME, 0)
         )
 
-        if quantity != 0:
+        if type(quantity) is not int or quantity < 0:
+            raise ValueError("Invalid registry NFT quantity")
+        if quantity:
             matches.append((reference, output, quantity))
 
     if len(matches) != 1:
@@ -109,8 +117,11 @@ def find_registry(utxos):
     if quantity != 1:
         raise ValueError("Invalid registry NFT quantity")
 
-    if output.get("address") != REGISTRY_ADDRESS:
+    if output.get("address") != address:
         raise ValueError("Unexpected registry address")
+
+    if not re.fullmatch(r"[0-9a-f]{64}#[0-9]+", reference):
+        raise ValueError("Invalid registry output reference")
 
     datum = output.get("inlineDatum")
 
@@ -120,12 +131,13 @@ def find_registry(utxos):
     return reference, decode_registry(datum)
 
 
-def main():
+def verify_registry(*, authorized, revision):
+    address, policy = registry_parameters()
     results = {}
 
     for name, container in AUTHORIZED_NODES.items():
-        utxos = query_registry(container)
-        reference, state = find_registry(utxos)
+        utxos = query_registry(container, address)
+        reference, state = find_registry(utxos, address, policy)
 
         results[name] = {
             "reference": reference,
@@ -142,7 +154,7 @@ def main():
     first = results["AS180"]
 
     if not all(result == first for result in results.values()):
-        raise ValueError("Authorized nodes disagree on registry state")
+        raise ValueError("Incumbent nodes disagree on registry reference or datum")
 
     state = first["state"]
 
@@ -152,11 +164,18 @@ def main():
     if state["ip"] != EXPECTED_IP:
         raise ValueError("Unexpected node IP address")
 
-    if state["revision"] != EXPECTED_REVISION:
+    if state["revision"] != revision:
         raise ValueError("Unexpected registry revision")
 
-    if not state["authorized"]:
-        raise ValueError("AS184 is not authorized")
+    if state["authorized"] is not authorized:
+        raise ValueError("Unexpected registry authorization state")
+
+    return {**first, "address": address, "policy": policy}
+
+
+def main():
+    snapshot = verify_registry(authorized=True, revision=EXPECTED_REVISION)
+    state = snapshot["state"]
 
     decision = {
         "timestamp_utc": datetime.now(timezone.utc).isoformat(),
@@ -164,7 +183,7 @@ def main():
         "node": state["node"],
         "ip": state["ip"],
         "revision": state["revision"],
-        "registry_utxo": first["reference"],
+        "registry_utxo": snapshot["reference"],
         "verified_nodes": list(AUTHORIZED_NODES),
         "mode": "DRY_RUN",
         "firewall_modified": False,
