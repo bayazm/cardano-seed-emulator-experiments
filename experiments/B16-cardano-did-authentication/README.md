@@ -23,8 +23,7 @@ Linux x86-64, Python 3, Cardano Node 11.1.3 and CLI 11.2.3.0, and the pinned SEE
 ## Installation
 
 1. Install SEED Emulator and the host utilities from the installation guide.
-2. In `experiments/B16-cardano-did-authentication/network/`, extract the checksum-verified Cardano archive under `resources/cardano-static/`.
-3. Return to the repository root for fresh genesis generation.
+2. From a disposable copy at the repository root, run `bash scripts/setup-cardano.sh B16` to install the checksum-verified Cardano archive and link it into `network/resources/cardano-static/`.
 
 ## Configuration
 
@@ -32,21 +31,7 @@ The compiler reads `config/` under its own directory. The active profile is `pri
 
 ## Running the Experiment
 
-From the repository root, in a disposable experiment copy:
-
-```bash
-umask 077
-python3 scripts/prepare-genesis.py experiments/B16-cardano-did-authentication --minutes 30
-cd experiments/B16-cardano-did-authentication/network
-python3 blockchain.py amd
-cd output
-docker-compose config -q
-docker-compose build
-docker-compose up -d
-docker-compose ps
-```
-
-Open a shell at the repository root after startup. Follow the [registry and admission procedure](../../docs/reproducibility/registry-procedure.md) for the ordered funding, deployment, admission and revocation steps. The [runtime verification plan](../../docs/reproducibility/runtime-verification.md) records the live inputs and the required evidence.
+Follow the [B16 fresh-chain runbook](../../docs/reproducibility/b16.md) for the disposable workspace, verified genesis, Compose preflight, identity enrollment, exact transaction-body workflow, admission, revocation and cleanup.
 
 ## Verification
 

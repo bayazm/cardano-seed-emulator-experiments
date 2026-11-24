@@ -15,7 +15,7 @@ from prototype import AdmissionGateway, GATEWAY, public_key_from_did
 from enrollment import verify_certificate
 from registry_policy import authorize_relay
 from b16_integrated_admission import verify_live_registry
-from b16_n15_firewall_controller import grant
+from b16_n15_firewall_controller import FirewallRollbackError, grant
 
 NODE = "AS184"
 CANDIDATE_IP = "10.184.0.71"
@@ -195,6 +195,8 @@ def main():
                         reason = "FIREWALL_ENFORCEMENT_FAILED"
                         result["decision"] = decision
                         result["reason"] = reason
+                        if isinstance(exc, FirewallRollbackError):
+                            result["firewall_modified"] = None
 
                         print(
                             "Firewall enforcement error:",

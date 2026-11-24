@@ -13,10 +13,12 @@ case "$EXPERIMENT" in
         EXPERIMENT_DIR="$ROOT_DIR/experiments/B11-cardano"
         SHA256="40e88a543564251338c4888ef79fde51d2306c18b48ac308c9eab3220e3a13f0"
         ;;
-    B12|B14|B15)
+    B12|B14|B15|B16)
         VERSION="11.1.3"
         CLI_VERSION="11.2.3.0"
-        if [[ "$EXPERIMENT" == B15 ]]; then
+        if [[ "$EXPERIMENT" == B16 ]]; then
+            EXPERIMENT_DIR="$ROOT_DIR/experiments/B16-cardano-did-authentication/network"
+        elif [[ "$EXPERIMENT" == B15 ]]; then
             EXPERIMENT_DIR="$ROOT_DIR/experiments/B15-cardano-smart-authorization-v2/network"
         elif [[ "$EXPERIMENT" == B14 ]]; then
             EXPERIMENT_DIR="$ROOT_DIR/experiments/B14-cardano-relay-admission"
@@ -26,7 +28,7 @@ case "$EXPERIMENT" in
         SHA256="530fb99986fbdccc46f9ee0dd86cabb1393b015feac9173cb731d89fa748365f"
         ;;
     *)
-        echo "Usage: $0 {B11|B12|B14|B15} [local-archive]" >&2
+        echo "Usage: $0 {B11|B12|B14|B15|B16} [local-archive]" >&2
         exit 1
         ;;
 esac
@@ -41,7 +43,7 @@ echo "Experiment: $EXPERIMENT"
 echo "Cardano Node version: $VERSION"
 
 RELATIVE_TARGET="../../../resources/cardano/$VERSION"
-if [[ "$EXPERIMENT" == B15 ]]; then
+if [[ "$EXPERIMENT" == B15 || "$EXPERIMENT" == B16 ]]; then
     RELATIVE_TARGET="../$RELATIVE_TARGET"
 fi
 
